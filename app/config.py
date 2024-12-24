@@ -1,5 +1,6 @@
-from pydantic_settings import BaseSettings
-
+from pydantic_settings import BaseSettings, Field
+from typing import Optional
+import os
 
 class Settings(BaseSettings):
     # Champs pour la configuration générale
@@ -27,8 +28,29 @@ class Settings(BaseSettings):
         ).replace(" ", "+")
 
     class Config:
-        env_file = ".env" 
+        # Charge les variables d'environnement depuis le fichier .env
+        env_file = ".env"
+        env_file_encoding = 'utf-8'
+
+    def validate(self):
+        """
+        Valide les informations essentielles et l'intégrité des variables d'environnement.
+        Cette méthode est appelée après l'instanciation des paramètres.
+        """
+        # Vérifie si la clé secrète est présente et valide
+        if not self.secret_key:
+            raise ValueError("La clé secrète 'secret_key' est manquante dans le fichier .env.")
+        
+        # Vérifie si les informations pour la base de données sont définies
+        if not all([self.server_name, self.bdd_name, self.user, self.mdp]):
+            raise ValueError("Certaines informations essentielles pour la base de données manquent dans le fichier .env.")
+        
+        # Vérifie la configuration du mot de passe haché
+        if not self.hashed_password:
+            raise ValueError("Le mot de passe haché 'hashed_password' est manquant dans le fichier .env.")
 
 
-# Instancie les paramètres pour les utiliser dans toute l'application
 settings = Settings()
+
+
+settings.validate()
