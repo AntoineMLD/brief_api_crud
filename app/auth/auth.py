@@ -25,12 +25,12 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # Dépendance OAuth2
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-# Vérifier le mot de passe
+# Vérifie le mot de passe
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 
-# Authentifier un utilisateur
+# Authentifie un utilisateur
 def authenticate_user(username: str, password: str) -> bool:
     if username != "testuser":
         raise HTTPException(
@@ -44,7 +44,7 @@ def authenticate_user(username: str, password: str) -> bool:
         )
     return True
 
-# Créer un token d'accès
+# Crée un token d'accès
 def create_access_token(data: dict, expires_delta: timedelta = None) -> str:
     """
     Génère un token JWT.

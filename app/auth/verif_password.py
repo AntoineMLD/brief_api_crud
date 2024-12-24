@@ -2,14 +2,14 @@ from passlib.context import CryptContext
 import os
 from dotenv import load_dotenv, dotenv_values
 
-# Recharger le fichier .env explicitement
+# Recharge le fichier .env explicitement
 dotenv_values(".env")  # Charge les valeurs depuis le fichier .env
 load_dotenv(override=True)
 
-# Créer un contexte pour bcrypt
+# Crée un contexte pour bcrypt
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# Récupérer le mot de passe haché depuis le .env
+# Récupére le mot de passe haché depuis le .env
 hashed_password = os.getenv("HASHED_PASSWORD").strip()
 plain_password = "password"
 

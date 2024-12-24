@@ -27,8 +27,8 @@ class Settings(BaseSettings):
         ).replace(" ", "+")
 
     class Config:
-        env_file = ".env"  # Fichier contenant les variables d'environnement
+        env_file = ".env" 
 
 
-# Instancier les paramètres pour les utiliser dans toute l'application
+# Instancie les paramètres pour les utiliser dans toute l'application
 settings = Settings()
