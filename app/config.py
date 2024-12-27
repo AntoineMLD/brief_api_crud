@@ -1,36 +1,38 @@
-from pydantic_settings import BaseSettings, Field
+from pydantic_settings import BaseSettings
+from pydantic import Field
 from typing import Optional
-import os
+
 
 class Settings(BaseSettings):
     # Champs pour la configuration générale
     app_name: str = "API CRUD avec Authentification"
-    secret_key: str  # Clé secrète pour JWT
-    algorithm: str = "HS256"  # Algorithme pour JWT
-    access_token_expire_minutes: int = 30  # Durée de validité des tokens en minutes
+    secret_key: str = Field(..., env="SECRET_KEY")  # Clé secrète pour JWT
+    algorithm: str = Field(default="HS256", env="ALGORITHM")  # Algorithme pour JWT
+    access_token_expire_minutes: int = Field(default=30, env="ACCESS_TOKEN_EXPIRE_MINUTES")  # Durée de validité des tokens
 
     # Informations pour la base de données
-    server_name: str  # Nom du serveur
-    bdd_name: str  # Nom de la base de données
-    user: str  # Utilisateur pour la base de données
-    mdp: str  # Mot de passe pour la base de données
-    port: int  # Port utilisé par le serveur
+    server_name: str = Field(..., env="SERVER_NAME")  # Nom du serveur
+    bdd_name: str = Field(..., env="BDD_NAME")  # Nom de la base de données
+    user: str = Field(..., env="USER")  # Utilisateur pour la base de données
+    mdp: str = Field(..., env="MDP")  # Mot de passe pour la base de données
+    port: int = Field(default=1433, env="PORT")  # Port utilisé par le serveur
 
     # Mot de passe hashé pour l'utilisateur (authentification)
-    hashed_password: str  # Mot de passe hashé récupéré depuis .env
+    hashed_password: str = Field(..., env="HASHED_PASSWORD")  # Mot de passe hashé récupéré depuis .env
 
     @property
     def database_url(self) -> str:
-        """Génère dynamiquement l'URL de connexion à la base de données."""
         return (
             f"mssql+pyodbc://{self.user}:{self.mdp}@{self.server_name}:{self.port}/"
-            f"{self.bdd_name}?driver=ODBC+Driver+18+for+SQL+Server"
+            f"{self.bdd_name}?driver=ODBC+Driver+18+for+SQL+Server&timeout=60"
         ).replace(" ", "+")
+
 
     class Config:
         # Charge les variables d'environnement depuis le fichier .env
         env_file = ".env"
-        env_file_encoding = 'utf-8'
+        env_file_encoding = "utf-8"
+        extra = "ignore"
 
     def validate(self):
         """
@@ -51,6 +53,5 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-
 
 settings.validate()
